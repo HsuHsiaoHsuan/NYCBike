@@ -11,4 +11,6 @@
               class="com.google.android.gms.maps.SupportMapFragment"
               map:uiCompass="true"
               map:uiRotateGestures="true"/>
+
+
 </LinearLayout>
