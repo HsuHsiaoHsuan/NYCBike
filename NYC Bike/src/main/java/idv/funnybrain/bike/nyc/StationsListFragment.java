@@ -6,9 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import idv.funnybrain.bike.nyc.data.StationsListAdapter;
-
-import java.util.HashMap;
 
 /**
  * Created by freeman on 2014/4/28.

@@ -1,9 +1,8 @@
-package idv.funnybrain.bike.nyc.data;
+package idv.funnybrain.bike.nyc;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import idv.funnybrain.bike.nyc.FunnyActivity;
 
 import java.util.Iterator;
 
@@ -16,7 +15,7 @@ public class StationsListAdapter extends BaseAdapter {
     public StationsListAdapter() {
         Iterator<String> iterator = FunnyActivity.stations_list.keySet().iterator();
         while(iterator.hasNext()) {
-            System.out.println(iterator.next());
+            System.out.println("~~~>"+iterator.next());
         }
     }
 
