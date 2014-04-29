@@ -16,8 +16,6 @@ public class StationsListFragment extends ListFragment {
     private static final String TAG = "StationsListFragment";
     // ---- constant variable END ----
 
-    // ---
-
     public static StationsListFragment newInstance() {
         if(D) { Log.d(TAG, "newInstance"); }
         StationsListFragment f = new StationsListFragment();
@@ -42,7 +40,7 @@ public class StationsListFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        StationsListAdapter adapter = new StationsListAdapter();
+        StationsListAdapter adapter = new StationsListAdapter(getActivity().getLayoutInflater());
         setListAdapter(adapter);
     }
 }

@@ -177,6 +177,8 @@ public class StationBeanList {
         result.append("stationName: " + this.stationName);
         result.append(", stAddress1: " + stAddress1);
         result.append(", stAddress2: " + stAddress2);
+        result.append(", bike: " + availableBikes);
+        result.append(", dock: " + availableDocks);
 
         return result.toString();
     }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/list_cell_padding"
+                android:paddingBottom="@dimen/list_cell_padding">
+    <TextView android:id="@+id/_id"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:visibility="gone"/>
+    <TextView android:id="@+id/_name"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentTop="true"
+              android:layout_alignParentLeft="true"
+              android:textAppearance="?android:textAppearanceMedium"/>
+    <TextView android:id="@+id/_address2"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentLeft="true"
+              android:layout_below="@id/_name"
+              android:layout_marginTop="3dp"
+              android:textAppearance="?android:textAppearanceMedium"/>
+    <TextView android:id="@+id/_bike"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentRight="true"
+              android:layout_below="@id/_name"
+              android:textAppearance="?android:textAppearanceLarge"/>
+    <TextView android:id="@+id/_dock"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentRight="true"
+              android:layout_below="@id/_bike"
+              android:layout_marginTop="7dp"
+              android:textAppearance="?android:textAppearanceLarge"/>
+</RelativeLayout>

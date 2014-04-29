@@ -21,6 +21,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -35,6 +37,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Created by Freeman on 2014/4/26.
@@ -50,16 +53,17 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
 
     // ---- public variable START ----
     public static HashMap<String, StationBeanList> stations_list;
+    public static HashMap<String, Marker> stations_marker_list;
     // ---- public variable END ----
 
-    // ---- local variable START ----
+    // ---- private variable START ----
     private GoogleMap mMap;
     private LocationClient mLocationClient;
 
     private ObjectMapper objectMapper;
     private String lastUpdate;
     private ListFragment listFragment_left;
-    // ---- local variable END ----
+    // ---- private variable END ----
 
 
     @Override
@@ -69,9 +73,15 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         setContentView(R.layout.activity_funny);
         setBehindContentView(R.layout.menu_frame);
 
+        SlidingMenu sm = getSlidingMenu();
+        sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+        sm.setFadeDegree(0.35f);
+        sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+
         mLocationClient = new LocationClient(this, this, this);
         objectMapper = new ObjectMapper();
         stations_list = new HashMap<String, StationBeanList>();
+        stations_marker_list = new HashMap<String, Marker>();
 
 //        if (savedInstanceState == null) {
 //            FragmentTransaction t = this.getSupportFragmentManager().beginTransaction();
@@ -92,88 +102,6 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
     public View onCreateView(String name, Context context, AttributeSet attrs) {
         if(D) { Log.d(TAG, "----> onCreateView"); }
         return super.onCreateView(name, context, attrs);
-    }
-
-    private void getData() {
-        DataDownloader.post("", null, new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(JSONObject response) {
-                try {
-                    lastUpdate = response.getString("executionTime");
-
-                    System.out.println(lastUpdate);
-                    String data = response.getString("stationBeanList");
-                    JsonFactory factory = new JsonFactory();
-                    JsonParser parser = factory.createParser(data);
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-                    mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-                    StationBeanList[] stationList = mapper.readValue(parser, StationBeanList[].class);
-
-                    stations_list.clear();
-                    for(StationBeanList sbl : stationList) {
-                        stations_list.put(sbl.getId(), sbl);
-                        if(D) { Log.d(TAG, "----> getData: " + sbl.toString()); }
-                    }
-                    if(stations_list.size() > 0) {
-                        if(D) { Log.d(TAG, "----> stations_list size: " + stations_list.size()); }
-                        setupLeftSlidingMenu();
-                        putDataOnMap();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (JsonParseException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    private void saveDataCache(String data) {
-        File file = new File(getFilesDir(), CACHE_FILE);
-        FileOutputStream outputStream;
-
-        try {
-            outputStream = openFileOutput(CACHE_FILE, Context.MODE_PRIVATE);
-            outputStream.write(data.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String getCacheData() {
-        File file = new File(getFilesDir(), CACHE_FILE);
-        FileInputStream inputStream;
-        StringBuilder result = new StringBuilder();
-        byte[] buffer = new byte[1024];
-
-        try {
-            inputStream = openFileInput(CACHE_FILE);
-            while(inputStream.read(buffer) != -1) {
-                result.append(new String(buffer));
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return result.toString();
-    }
-
-    private void putDataOnMap() {
-
-    }
-
-    private void setupLeftSlidingMenu() {
-        FragmentTransaction t = this.getSupportFragmentManager().beginTransaction();
-        listFragment_left = StationsListFragment.newInstance();
-        t.replace(R.id.menu_frame, listFragment_left);
-        t.commit();
     }
 
     @Override
@@ -257,6 +185,94 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         if(D) Log.d(TAG, "----> setUpMap");
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
+    }
+
+    private void getData() {
+        DataDownloader.post("", null, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    lastUpdate = response.getString("executionTime");
+
+                    System.out.println(lastUpdate);
+                    String data = response.getString("stationBeanList");
+                    JsonFactory factory = new JsonFactory();
+                    JsonParser parser = factory.createParser(data);
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+                    mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+                    StationBeanList[] stationList = mapper.readValue(parser, StationBeanList[].class);
+
+                    stations_list.clear();
+                    for(StationBeanList sbl : stationList) {
+                        stations_list.put(sbl.getId(), sbl);
+                        if(D) { Log.d(TAG, "----> getData: " + sbl.toString()); }
+                    }
+                    if(stations_list.size() > 0) {
+                        if(D) { Log.d(TAG, "----> stations_list size: " + stations_list.size()); }
+                        setupLeftSlidingMenu();
+                        putDataOnMap();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (JsonParseException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void saveDataCache(String data) {
+        File file = new File(getFilesDir(), CACHE_FILE);
+        FileOutputStream outputStream;
+
+        try {
+            outputStream = openFileOutput(CACHE_FILE, Context.MODE_PRIVATE);
+            outputStream.write(data.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getCacheData() {
+        File file = new File(getFilesDir(), CACHE_FILE);
+        FileInputStream inputStream;
+        StringBuilder result = new StringBuilder();
+        byte[] buffer = new byte[1024];
+
+        try {
+            inputStream = openFileInput(CACHE_FILE);
+            while(inputStream.read(buffer) != -1) {
+                result.append(new String(buffer));
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result.toString();
+    }
+
+    private void putDataOnMap() {
+        mMap.clear();
+        stations_marker_list.clear();
+        Iterator<String> iterator = stations_list.keySet().iterator();
+        while(iterator.hasNext()) {
+            String idx = iterator.next();
+            stations_marker_list.put(idx, new mMap.addMarker(new MarkerOptions()));
+        }
+    }
+
+    private void setupLeftSlidingMenu() {
+        FragmentTransaction t = this.getSupportFragmentManager().beginTransaction();
+        listFragment_left = StationsListFragment.newInstance();
+        t.replace(R.id.menu_frame, listFragment_left);
+        t.commit();
     }
     // ---- local method END ----
 
