@@ -21,14 +21,6 @@ public class StationsListAdapter extends BaseAdapter {
 
         idx = new String[FunnyActivity.stations_list.size()];
         FunnyActivity.stations_list.keySet().toArray(idx);
-        for(int x=0; x<idx.length;x++) {
-            System.out.println("~~~~>" + idx[x]);
-        }
-
-//        Iterator<String> iterator = FunnyActivity.stations_list.keySet().iterator();
-//        while(iterator.hasNext()) {
-//            System.out.println("~~~>"+iterator.next());
-//        }
     }
 
     @Override

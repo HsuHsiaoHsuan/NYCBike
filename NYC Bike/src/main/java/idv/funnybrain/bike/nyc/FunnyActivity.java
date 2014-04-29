@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -20,6 +22,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -32,8 +35,11 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.*;
 import java.util.HashMap;
@@ -59,10 +65,12 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
     // ---- private variable START ----
     private GoogleMap mMap;
     private LocationClient mLocationClient;
+    private GoogleMap.OnMarkerClickListener markerClickListener;
 
     private ObjectMapper objectMapper;
     private String lastUpdate;
     private ListFragment listFragment_left;
+    private String preSelectedMarker = "";
     // ---- private variable END ----
 
 
@@ -77,6 +85,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
         sm.setFadeDegree(0.35f);
         sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+        setSlidingActionBarEnabled(false);
 
         mLocationClient = new LocationClient(this, this, this);
         objectMapper = new ObjectMapper();
@@ -175,7 +184,6 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(40.725925, -74.00322), 14.0f));
                 setUpMap();
             }
         }
@@ -183,18 +191,36 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
 
     private void setUpMap() {
         if(D) Log.d(TAG, "----> setUpMap");
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(40.725925, -74.00322), 12.0f));
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        markerClickListener = new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                FunnyActivity.this.selectMarker(marker.getTitle());
+                return false; // if return true, it wont show marker info window.
+            }
+        };
+        mMap.setOnMarkerClickListener(markerClickListener);
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                FunnyActivity.this.selectMarker("");
+            }
+        });
     }
 
     private void getData() {
+        setProgressBarIndeterminateVisibility(true);
         DataDownloader.post("", null, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(JSONObject response) {
                 try {
                     lastUpdate = response.getString("executionTime");
 
-                    System.out.println(lastUpdate);
+                    if(D) { Log.d(TAG,"lastUpdate: " + lastUpdate); }
                     String data = response.getString("stationBeanList");
                     JsonFactory factory = new JsonFactory();
                     JsonParser parser = factory.createParser(data);
@@ -213,6 +239,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                         if(D) { Log.d(TAG, "----> stations_list size: " + stations_list.size()); }
                         setupLeftSlidingMenu();
                         putDataOnMap();
+                        setProgressBarIndeterminateVisibility(false);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -222,9 +249,112 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                     e.printStackTrace();
                 }
             }
+
+            @Override
+            public void onFailure(int statusCode, Throwable e, JSONArray errorResponse) {
+                //super.onFailure(statusCode, e, errorResponse);
+                if(D) { Log.e(TAG, "----> getData fail: statusCode " + statusCode); }
+            }
+
+            @Override
+            public void onFailure(Throwable e, JSONObject errorResponse) {
+                //super.onFailure(e, errorResponse);
+                if(D) { Log.e(TAG, "----> getData fail: 1 "); }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Throwable e, JSONObject errorResponse) {
+                //super.onFailure(statusCode, e, errorResponse);
+                if(D) { Log.e(TAG, "----> getData fail: 2 " + statusCode); }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject errorResponse) {
+                //super.onFailure(statusCode, headers, e, errorResponse);
+                if(D) { Log.e(TAG, "----> getData fail: 3 " + statusCode); }
+            }
+
+            @Override
+            public void onFailure(Throwable e, JSONArray errorResponse) {
+                //super.onFailure(e, errorResponse);
+                if(D) { Log.e(TAG, "----> getData fail: 4 "); }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONArray errorResponse) {
+                //super.onFailure(statusCode, headers, e, errorResponse);
+                if(D) { Log.e(TAG, "----> getData fail: 5 " + statusCode); }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseBody, Throwable e) {
+                //super.onFailure(statusCode, headers, responseBody, e);
+                if(D) { Log.e(TAG, "----> getData fail: 6 " + statusCode); }
+            }
+
+            @Override
+            public void onFailure(String responseBody, Throwable error) {
+                //super.onFailure(responseBody, error);
+                if(D) { Log.e(TAG, "----> getData fail: 7 " + responseBody); }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                //super.onFailure(statusCode, headers, responseBody, error);
+                if(D) { Log.e(TAG, "----> getData fail: 8 " + statusCode); }
+            }
+
+            @Override
+            public void onFinish() {
+                if(D) { Log.e(TAG, "----> onFinish"); }
+                super.onFinish();
+            }
+
+            @Override
+            public void onRetry() {
+                if(D) { Log.e(TAG, "----> onRetry"); }
+                super.onRetry();
+            }
+
+            @Override
+            public void onSuccess(JSONArray response) {
+                //super.onSuccess(response);
+                if(D) { Log.e(TAG, "----> 1"); }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                if(D) { Log.e(TAG, "----> 2 " + statusCode + ", " + response.toString()); }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, JSONObject response) {
+                //super.onSuccess(statusCode, response);
+                if(D) { Log.e(TAG, "----> 3"); }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                //super.onSuccess(statusCode, headers, response);
+                if(D) { Log.e(TAG, "----> 4"); }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, JSONArray response) {
+                super.onSuccess(statusCode, response);
+                if(D) { Log.e(TAG, "----> 5"); }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseBody) {
+                super.onSuccess(statusCode, headers, responseBody);
+                if(D) { Log.e(TAG, "----> 6 " + statusCode + ", " + responseBody); }
+            }
         });
     }
 
+    // TODO cache data
     private void saveDataCache(String data) {
         File file = new File(getFilesDir(), CACHE_FILE);
         FileOutputStream outputStream;
@@ -238,6 +368,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         }
     }
 
+    // TODO get cached data
     private String getCacheData() {
         File file = new File(getFilesDir(), CACHE_FILE);
         FileInputStream inputStream;
@@ -259,12 +390,23 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
     }
 
     private void putDataOnMap() {
+        TextView tv_lastUpdate = (TextView) findViewById(R.id.lastUpdate);
+        tv_lastUpdate.setText(getString(R.string.lastUpdate)+ lastUpdate);
+        tv_lastUpdate.setVisibility(View.VISIBLE);
+
         mMap.clear();
         stations_marker_list.clear();
         Iterator<String> iterator = stations_list.keySet().iterator();
         while(iterator.hasNext()) {
             String idx = iterator.next();
-            stations_marker_list.put(idx, new mMap.addMarker(new MarkerOptions()));
+            StationBeanList tmpStation = stations_list.get(idx);
+            stations_marker_list.put(idx, mMap.addMarker(
+                    new MarkerOptions().position(tmpStation.getLatLng())
+                                       .title(tmpStation.getId())
+                                       .snippet(tmpStation.getStationName())
+                                       .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                                       .draggable(false))
+            );
         }
     }
 
@@ -273,6 +415,39 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         listFragment_left = StationsListFragment.newInstance();
         t.replace(R.id.menu_frame, listFragment_left);
         t.commit();
+    }
+
+    protected void updateMap(String idx) {
+        getSlidingMenu().showContent(true);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(stations_list.get(idx).getLatLng(), 15.0f));
+        selectMarker(idx);
+    }
+
+    protected void selectMarker(String idx) {
+        if(!preSelectedMarker.equals("")) { // reset previous selected Marker
+            stations_marker_list.get(preSelectedMarker).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+        }
+        if(!idx.equals("")) {
+            stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            updateExtraInfo(true, idx);
+        } else {
+            updateExtraInfo(false, idx);
+        }
+        preSelectedMarker = idx;
+    }
+
+    protected void updateExtraInfo(boolean toShow, String idx) {
+        RelativeLayout infoLayout = (RelativeLayout) findViewById(R.id.info);
+        if(toShow) {
+            StationBeanList tmpStation = stations_list.get(idx);
+            ((TextView) findViewById(R.id.info_name)).setText(tmpStation.getStationName());
+            ((TextView) findViewById(R.id.info_address2)).setText(tmpStation.getStAddress2());
+            ((TextView) findViewById(R.id.info_bike)).setText(String.valueOf(tmpStation.getAvailableBikes()));
+            ((TextView) findViewById(R.id.info_dock)).setText(String.valueOf(tmpStation.getAvailableDocks()));
+            infoLayout.setVisibility(View.VISIBLE);
+        } else {
+            infoLayout.setVisibility(View.GONE);
+        }
     }
     // ---- local method END ----
 

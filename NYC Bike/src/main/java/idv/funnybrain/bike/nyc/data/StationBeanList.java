@@ -1,5 +1,7 @@
 package idv.funnybrain.bike.nyc.data;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by freeman on 2014/4/28.
  */
@@ -181,5 +183,9 @@ public class StationBeanList {
         result.append(", dock: " + availableDocks);
 
         return result.toString();
+    }
+
+    public LatLng getLatLng() {
+        return new LatLng(this.latitude, this.longitude);
     }
 }
