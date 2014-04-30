@@ -3,6 +3,8 @@ package idv.funnybrain.bike.nyc;
 import android.content.Context;
 import android.content.IntentSender;
 import android.content.res.Configuration;
+import android.graphics.*;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -25,10 +27,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.*;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -196,8 +195,10 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         markerClickListener = new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                LatLng position = marker.getPosition();
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
                 FunnyActivity.this.selectMarker(marker.getTitle());
-                return false; // if return true, it wont show marker info window.
+                return true; // if return true, it wont show marker info window.
             }
         };
         mMap.setOnMarkerClickListener(markerClickListener);
@@ -205,7 +206,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                FunnyActivity.this.selectMarker("");
+                FunnyActivity.this.selectMarker(""); // when user click empty space on Map, it means click nothing -> ""
             }
         });
     }
@@ -248,55 +249,55 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                 }
             }
 
-            @Override
-            public void onFailure(int statusCode, Throwable e, JSONArray errorResponse) {
-                //super.onFailure(statusCode, e, errorResponse);
-                if(D) { Log.e(TAG, "----> getData fail: statusCode " + statusCode); }
-            }
+//            @Override
+//            public void onFailure(int statusCode, Throwable e, JSONArray errorResponse) {
+//                //super.onFailure(statusCode, e, errorResponse);
+//                if(D) { Log.e(TAG, "----> getData fail: statusCode " + statusCode); }
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable e, JSONObject errorResponse) {
+//                //super.onFailure(e, errorResponse);
+//                if(D) { Log.e(TAG, "----> getData fail: 1 "); }
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Throwable e, JSONObject errorResponse) {
+//                //super.onFailure(statusCode, e, errorResponse);
+//                if(D) { Log.e(TAG, "----> getData fail: 2 " + statusCode); }
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject errorResponse) {
+//                //super.onFailure(statusCode, headers, e, errorResponse);
+//                if(D) { Log.e(TAG, "----> getData fail: 3 " + statusCode); }
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable e, JSONArray errorResponse) {
+//                //super.onFailure(e, errorResponse);
+//                if(D) { Log.e(TAG, "----> getData fail: 4 "); }
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONArray errorResponse) {
+//                //super.onFailure(statusCode, headers, e, errorResponse);
+//                if(D) { Log.e(TAG, "----> getData fail: 5 " + statusCode); }
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String responseBody, Throwable e) {
+//                //super.onFailure(statusCode, headers, responseBody, e);
+//                if(D) { Log.e(TAG, "----> getData fail: 6 " + statusCode); }
+//            }
+//
+//            @Override
+//            public void onFailure(String responseBody, Throwable error) {
+//                //super.onFailure(responseBody, error);
+//                if(D) { Log.e(TAG, "----> getData fail: 7 " + responseBody); }
+//            }
 
-            @Override
-            public void onFailure(Throwable e, JSONObject errorResponse) {
-                //super.onFailure(e, errorResponse);
-                if(D) { Log.e(TAG, "----> getData fail: 1 "); }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Throwable e, JSONObject errorResponse) {
-                //super.onFailure(statusCode, e, errorResponse);
-                if(D) { Log.e(TAG, "----> getData fail: 2 " + statusCode); }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject errorResponse) {
-                //super.onFailure(statusCode, headers, e, errorResponse);
-                if(D) { Log.e(TAG, "----> getData fail: 3 " + statusCode); }
-            }
-
-            @Override
-            public void onFailure(Throwable e, JSONArray errorResponse) {
-                //super.onFailure(e, errorResponse);
-                if(D) { Log.e(TAG, "----> getData fail: 4 "); }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONArray errorResponse) {
-                //super.onFailure(statusCode, headers, e, errorResponse);
-                if(D) { Log.e(TAG, "----> getData fail: 5 " + statusCode); }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseBody, Throwable e) {
-                //super.onFailure(statusCode, headers, responseBody, e);
-                if(D) { Log.e(TAG, "----> getData fail: 6 " + statusCode); }
-            }
-
-            @Override
-            public void onFailure(String responseBody, Throwable error) {
-                //super.onFailure(responseBody, error);
-                if(D) { Log.e(TAG, "----> getData fail: 7 " + responseBody); }
-            }
-
-            // no Connection!
+            // no Connection!  or 500
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 //super.onFailure(statusCode, headers, responseBody, error);
@@ -309,47 +310,47 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                 super.onFinish();
             }
 
-            @Override
-            public void onRetry() {
-                if(D) { Log.e(TAG, "----> onRetry"); }
-                super.onRetry();
-            }
-
-            @Override
-            public void onSuccess(JSONArray response) {
-                //super.onSuccess(response);
-                if(D) { Log.e(TAG, "----> 1"); }
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                if(D) { Log.e(TAG, "----> 2 " + statusCode + ", " + response.toString()); }
-            }
-
-            @Override
-            public void onSuccess(int statusCode, JSONObject response) {
-                //super.onSuccess(statusCode, response);
-                if(D) { Log.e(TAG, "----> 3"); }
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                //super.onSuccess(statusCode, headers, response);
-                if(D) { Log.e(TAG, "----> 4"); }
-            }
-
-            @Override
-            public void onSuccess(int statusCode, JSONArray response) {
-                super.onSuccess(statusCode, response);
-                if(D) { Log.e(TAG, "----> 5"); }
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseBody) {
-                super.onSuccess(statusCode, headers, responseBody);
-                if(D) { Log.e(TAG, "----> 6 " + statusCode + ", " + responseBody); }
-            }
+//            @Override
+//            public void onRetry() {
+//                if(D) { Log.e(TAG, "----> onRetry"); }
+//                super.onRetry();
+//            }
+//
+//            @Override
+//            public void onSuccess(JSONArray response) {
+//                //super.onSuccess(response);
+//                if(D) { Log.e(TAG, "----> 1"); }
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                super.onSuccess(statusCode, headers, response);
+//                if(D) { Log.e(TAG, "----> 2 " + statusCode + ", " + response.toString()); }
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, JSONObject response) {
+//                //super.onSuccess(statusCode, response);
+//                if(D) { Log.e(TAG, "----> 3"); }
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+//                //super.onSuccess(statusCode, headers, response);
+//                if(D) { Log.e(TAG, "----> 4"); }
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, JSONArray response) {
+//                super.onSuccess(statusCode, response);
+//                if(D) { Log.e(TAG, "----> 5"); }
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, String responseBody) {
+//                super.onSuccess(statusCode, headers, responseBody);
+//                if(D) { Log.e(TAG, "----> 6 " + statusCode + ", " + responseBody); }
+//            }
         });
     }
 
@@ -400,11 +401,14 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
             String idx = iterator.next();
             StationBeanList tmpStation = stations_list.get(idx);
             stations_marker_list.put(idx, mMap.addMarker(
-                    new MarkerOptions().position(tmpStation.getLatLng())
-                                       .title(tmpStation.getId())
-                                       .snippet(tmpStation.getStationName())
-                                       .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
-                                       .draggable(false))
+                            new MarkerOptions().position(tmpStation.getLatLng())
+                                    .title(tmpStation.getId())
+                                    .snippet(tmpStation.getStationName())
+                                            //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                                            //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_empty))
+                                    .icon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()))
+                                    .draggable(false)
+                    )
             );
         }
     }
@@ -424,12 +428,13 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
 
     protected void selectMarker(String idx) {
         if(!preSelectedMarker.equals("")) { // reset previous selected Marker
-            stations_marker_list.get(preSelectedMarker).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+            StationBeanList tmpStation = stations_list.get(preSelectedMarker);
+            stations_marker_list.get(preSelectedMarker).setIcon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(tmpStation.getAvailableBikes(),tmpStation.getAvailableDocks()).getBitmap()));
         }
         if(!idx.equals("")) {
-            stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_bike));
             updateExtraInfo(true, idx);
-        } else {
+        } else { // click on nothing
             updateExtraInfo(false, idx);
         }
         preSelectedMarker = idx;
@@ -447,6 +452,23 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         } else {
             infoLayout.setVisibility(View.GONE);
         }
+    }
+
+    private BitmapDrawable writeOnDrawable(int bikeCount, int dockCount) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker_empty).copy(Bitmap.Config.ARGB_8888, true);
+
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.BLUE);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(23);
+        paint.setTypeface(Typeface.DEFAULT_BOLD);
+
+        Canvas canvas = new Canvas(bitmap);
+        String show = bikeCount + "/" + dockCount;
+        canvas.drawText(show, bitmap.getWidth()/2, bitmap.getHeight()/2, paint);
+
+        return new BitmapDrawable(getResources(), bitmap);
     }
     // ---- local method END ----
 

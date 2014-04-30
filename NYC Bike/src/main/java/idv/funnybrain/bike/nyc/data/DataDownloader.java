@@ -13,13 +13,13 @@ public class DataDownloader {
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        client.setTimeout(1);
+        client.setTimeout(15000);
         client.setMaxRetriesAndTimeout(10, 1300);
         client.get(getAbsoluteUrl(url), params, responseHandler);
     }
 
     public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        client.setTimeout(1);
+        client.setTimeout(15000);
         client.setMaxRetriesAndTimeout(10, 1300);
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
