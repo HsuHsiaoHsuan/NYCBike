@@ -13,8 +13,11 @@ import android.view.View;
 import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -31,15 +34,10 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import idv.funnybrain.bike.nyc.data.DataDownloader;
 import idv.funnybrain.bike.nyc.data.StationBeanList;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.*;
 import java.util.HashMap;
@@ -298,6 +296,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                 if(D) { Log.e(TAG, "----> getData fail: 7 " + responseBody); }
             }
 
+            // no Connection!
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 //super.onFailure(statusCode, headers, responseBody, error);
