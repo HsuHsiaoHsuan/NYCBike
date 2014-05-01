@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.capricorn.RayMenu;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -104,6 +105,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         }
         getData();
 
+        RayMenu rayMenu = (RayMenu) findViewById(R.id.ray_menu);
 
         if(D) { Log.d(TAG, "----> onCreate"); }
     }
@@ -355,10 +357,10 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
     protected void selectMarker(String idx) {
         if(!preSelectedMarker.equals("")) { // reset previous selected Marker
             StationBeanList tmpStation = stations_list.get(preSelectedMarker);
-            stations_marker_list.get(preSelectedMarker).setIcon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(tmpStation.getAvailableBikes(),tmpStation.getAvailableDocks()).getBitmap()));
+            stations_marker_list.get(preSelectedMarker).setIcon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()));
         }
         if(!idx.equals("")) {
-            stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_bike));
+            stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_bike_selected));
             updateExtraInfo(true, idx);
         } else { // click on nothing
             updateExtraInfo(false, idx);

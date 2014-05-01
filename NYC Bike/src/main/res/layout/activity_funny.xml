@@ -19,6 +19,7 @@
               android:layout_alignParentRight="true"
               android:textAppearance="?android:textAppearanceSmall"
               android:background="@color/extraInfo_background"/>
+
     <RelativeLayout
               android:id="@+id/info"
               android:layout_width="match_parent"
@@ -65,4 +66,13 @@
                   android:textStyle="bold"
                   android:textAlignment="textEnd"/>
     </RelativeLayout>
+
+    <com.capricorn.RayMenu
+        android:id="@+id/ray_menu"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"/>
 </RelativeLayout>
