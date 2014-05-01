@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NYC Bike/libs/ArcMenu/ArcMenu.iml" filepath="$PROJECT_DIR$/NYC Bike/libs/ArcMenu/ArcMenu.iml" />
       <module fileurl="file://$PROJECT_DIR$/NYC Bike/NYC Bike.iml" filepath="$PROJECT_DIR$/NYC Bike/NYC Bike.iml" />
       <module fileurl="file://$PROJECT_DIR$/NYCBike.iml" filepath="$PROJECT_DIR$/NYCBike.iml" />
-      <module fileurl="file://$PROJECT_DIR$/NYC Bike/libs/libs.iml" filepath="$PROJECT_DIR$/NYC Bike/libs/libs.iml" />
     </modules>
   </component>
 </project>
