@@ -9,6 +9,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/NYC Bike" />
+            <option value="$PROJECT_DIR$/NYC Bike/libs" />
+            <option value="$PROJECT_DIR$/NYC Bike/libs/ArcMenu" />
+            <option value="$PROJECT_DIR$/NYC Bike/libs/ArcMenu/library" />
           </set>
         </option>
       </GradleProjectSettings>

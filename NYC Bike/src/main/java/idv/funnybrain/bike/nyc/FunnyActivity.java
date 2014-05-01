@@ -27,14 +27,16 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import idv.funnybrain.bike.nyc.data.DataDownloader;
 import idv.funnybrain.bike.nyc.data.StationBeanList;
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -101,6 +103,8 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
             listFragment_left = (ListFragment) this.getSupportFragmentManager().findFragmentById(R.id.menu_frame);
         }
         getData();
+
+
         if(D) { Log.d(TAG, "----> onCreate"); }
     }
 
@@ -235,7 +239,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                         if(D) { Log.d(TAG, "----> getData: " + sbl.toString()); }
                     }
                     if(stations_list.size() > 0) {
-                        if(D) { Log.d(TAG, "----> stations_list size: " + stations_list.size()); }
+                        if(D) { Log.d(TAG, "----> getData, stations_list size: " + stations_list.size()); }
                         setupLeftSlidingMenu();
                         putDataOnMap();
                         setProgressBarIndeterminateVisibility(false);
@@ -249,108 +253,30 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                 }
             }
 
-//            @Override
-//            public void onFailure(int statusCode, Throwable e, JSONArray errorResponse) {
-//                //super.onFailure(statusCode, e, errorResponse);
-//                if(D) { Log.e(TAG, "----> getData fail: statusCode " + statusCode); }
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable e, JSONObject errorResponse) {
-//                //super.onFailure(e, errorResponse);
-//                if(D) { Log.e(TAG, "----> getData fail: 1 "); }
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Throwable e, JSONObject errorResponse) {
-//                //super.onFailure(statusCode, e, errorResponse);
-//                if(D) { Log.e(TAG, "----> getData fail: 2 " + statusCode); }
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject errorResponse) {
-//                //super.onFailure(statusCode, headers, e, errorResponse);
-//                if(D) { Log.e(TAG, "----> getData fail: 3 " + statusCode); }
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable e, JSONArray errorResponse) {
-//                //super.onFailure(e, errorResponse);
-//                if(D) { Log.e(TAG, "----> getData fail: 4 "); }
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONArray errorResponse) {
-//                //super.onFailure(statusCode, headers, e, errorResponse);
-//                if(D) { Log.e(TAG, "----> getData fail: 5 " + statusCode); }
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, String responseBody, Throwable e) {
-//                //super.onFailure(statusCode, headers, responseBody, e);
-//                if(D) { Log.e(TAG, "----> getData fail: 6 " + statusCode); }
-//            }
-//
-//            @Override
-//            public void onFailure(String responseBody, Throwable error) {
-//                //super.onFailure(responseBody, error);
-//                if(D) { Log.e(TAG, "----> getData fail: 7 " + responseBody); }
-//            }
-
             // no Connection!  or 500
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                //super.onFailure(statusCode, headers, responseBody, error);
-                if(D) { Log.e(TAG, "----> getData fail: 8 " + statusCode); }
+                super.onFailure(statusCode, headers, responseBody, error);
+                if(D) { Log.e(TAG, "----> getData fail: " + statusCode); }
+            }
+
+            @Override
+            public void onProgress(int bytesWritten, int totalSize) {
+                super.onProgress(bytesWritten, totalSize);
+                if(D) { Log.e(TAG, "----> getData progress, bytesWritten: " + bytesWritten + ", totalSize: " + totalSize); }
+            }
+
+            @Override
+            public void onRetry() {
+                super.onRetry();
+                if(D) { Log.e(TAG, "----> getData retry"); }
             }
 
             @Override
             public void onFinish() {
-                if(D) { Log.e(TAG, "----> onFinish"); }
                 super.onFinish();
+                if(D) { Log.e(TAG, "----> onFinish"); }
             }
-
-//            @Override
-//            public void onRetry() {
-//                if(D) { Log.e(TAG, "----> onRetry"); }
-//                super.onRetry();
-//            }
-//
-//            @Override
-//            public void onSuccess(JSONArray response) {
-//                //super.onSuccess(response);
-//                if(D) { Log.e(TAG, "----> 1"); }
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                super.onSuccess(statusCode, headers, response);
-//                if(D) { Log.e(TAG, "----> 2 " + statusCode + ", " + response.toString()); }
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, JSONObject response) {
-//                //super.onSuccess(statusCode, response);
-//                if(D) { Log.e(TAG, "----> 3"); }
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-//                //super.onSuccess(statusCode, headers, response);
-//                if(D) { Log.e(TAG, "----> 4"); }
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, JSONArray response) {
-//                super.onSuccess(statusCode, response);
-//                if(D) { Log.e(TAG, "----> 5"); }
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, String responseBody) {
-//                super.onSuccess(statusCode, headers, responseBody);
-//                if(D) { Log.e(TAG, "----> 6 " + statusCode + ", " + responseBody); }
-//            }
         });
     }
 
