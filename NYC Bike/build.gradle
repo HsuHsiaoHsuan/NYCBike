@@ -38,41 +38,14 @@ android {
     }
 }
 
-libraries = [
-    ArcMenu: [
-        "$projectDir/libs/ArcMenu/library"
-    ]
-]
-
 dependencies {
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.jeremyfeinstein.slidingmenu:library:1.3@aar'
     compile 'com.fasterxml.jackson.core:jackson-core:2.3.3'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.3.3'
+    compile project(':NYC Bike:libs:ArcMenu')
     compile 'com.android.support:support-v4:19.1.+'
     compile 'com.google.maps.android:android-maps-utils:0.3+'
     compile 'com.google.android.gms:play-services:4.3.+'
-    compile files(libraries.ArcMenu)
     compile fileTree(dir: 'libs', include: ['*.jar'])
-}
-
-android.applicationVariants.all { variant ->
-    aptOutput = file("${project.buildDir}/source/apt_generated/${variant.dirName}")
-    println "****************************"
-    println "variant: ${variant.name}"
-    println "manifest:  ${variant.processResources.manifestFile}"
-    println "aptOutput:  ${aptOutput}"
-    println "****************************"
-
-    variant.javaCompile.doFirst {
-        println "*** compile doFirst ${variant.name}"
-        aptOutput.mkdirs()
-        variant.javaCompile.options.compilerArgs += [
-                '-processorpath', configurations.apt.getAsPath(),
-                '-AandroidManifestFile=' + variant.processResources.manifestFile,
-                '-s', aptOutput
-        ]
-    }
-
-    variant.addJavaSourceFoldersToModel(aptOutput)
 }
