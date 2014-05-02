@@ -15,6 +15,7 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import idv.funnybrain.bike.nyc.R;
 
 public class RayMenu extends RelativeLayout {
 	private RayLayout mRayLayout;

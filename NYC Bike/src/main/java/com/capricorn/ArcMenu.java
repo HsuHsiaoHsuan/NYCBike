@@ -32,6 +32,7 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import idv.funnybrain.bike.nyc.R;
 
 /**
  * A custom view that looks like the menu in <a href="https://path.com">Path

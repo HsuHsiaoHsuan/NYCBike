@@ -30,6 +30,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.Animation.AnimationListener;
+import idv.funnybrain.bike.nyc.R;
 
 /**
  * A Layout that arranges its children around its center. The arc can be set by
