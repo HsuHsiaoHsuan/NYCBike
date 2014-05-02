@@ -16,7 +16,6 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.capricorn.RayMenu;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -106,10 +105,6 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         }
         getData();
 
-        RayMenu rayMenu = (RayMenu) findViewById(R.id.ray_menu);
-        ImageView test = new ImageView(this);
-        test.setImageResource(R.drawable.ic_launcher);
-        rayMenu.addItem(test, null);
 
         if(D) { Log.d(TAG, "----> onCreate"); }
     }
