@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:sat="http://schemas.android.com/apk/res/android.view.ext"
+
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -28,55 +28,52 @@
               android:background="@color/extraInfo_background"
               android:visibility="gone">
         <TextView android:id="@+id/info_name"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_alignParentTop="true"
-                  android:layout_alignParentLeft="true"
-                  android:layout_marginTop="@dimen/list_cell_padding"
-                  android:layout_marginLeft="@dimen/list_cell_padding"
-                  android:textAppearance="?android:textAppearanceMedium"
-                  android:maxLines="2"/>
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentTop="true"
+                   android:layout_alignParentLeft="true"
+                   android:layout_marginTop="@dimen/list_cell_padding"
+                   android:layout_marginLeft="@dimen/list_cell_padding"
+                   android:textAppearance="?android:textAppearanceMedium"
+                   android:maxLines="2"/>
         <TextView android:id="@+id/info_address2"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_below="@id/info_name"
-                  android:layout_alignParentLeft="true"
-                  android:layout_marginTop="@dimen/list_cell_padding"
-                  android:layout_marginLeft="@dimen/list_cell_padding"
-                  android:textAppearance="?android:textAppearanceMedium"/>
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_below="@id/info_name"
+                   android:layout_alignParentLeft="true"
+                   android:layout_marginTop="@dimen/list_cell_padding"
+                   android:layout_marginLeft="@dimen/list_cell_padding"
+                   android:textAppearance="?android:textAppearanceMedium"/>
         <TextView android:id="@+id/info_bike"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_below="@id/info_address2"
-                  android:layout_alignParentLeft="true"
-                  android:layout_marginLeft="@dimen/slidingmenu_offset"
-                  android:layout_marginBottom="@dimen/list_padding"
-                  android:layout_marginTop="@dimen/list_padding"
-                  android:textAppearance="?android:textAppearanceLarge"
-                  android:textStyle="bold"
-                  android:textAlignment="textEnd"/>
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_below="@id/info_address2"
+                   android:layout_alignParentLeft="true"
+                   android:layout_marginLeft="@dimen/slidingmenu_offset"
+                   android:layout_marginBottom="@dimen/list_padding"
+                   android:layout_marginTop="@dimen/list_padding"
+                   android:textAppearance="?android:textAppearanceLarge"
+                   android:textStyle="bold"
+                   android:textAlignment="textEnd"/>
         <TextView android:id="@+id/info_dock"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_below="@id/info_address2"
-                  android:layout_alignParentRight="true"
-                  android:layout_marginRight="@dimen/slidingmenu_offset"
-                  android:layout_marginBottom="@dimen/list_padding"
-                  android:layout_marginTop="@dimen/list_padding"
-                  android:textAppearance="?android:textAppearanceLarge"
-                  android:textStyle="bold"
-                  android:textAlignment="textEnd"/>
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_below="@id/info_address2"
+                   android:layout_alignParentRight="true"
+                   android:layout_marginRight="@dimen/slidingmenu_offset"
+                   android:layout_marginBottom="@dimen/list_padding"
+                   android:layout_marginTop="@dimen/list_padding"
+                   android:textAppearance="?android:textAppearanceLarge"
+                   android:textStyle="bold"
+                   android:textAlignment="textEnd"/>
     </RelativeLayout>
-
-    <android.view.ext.SatelliteMenu
-            android:id="@+id/menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:layout_margin="8dp"
-            sat:satelliteDistance="170dp"
-            sat:mainImage="@drawable/ic_launcher"
-            sat:totalSpacingDegree="90"
-            sat:closeOnClick="true"
-            sat:expandDuration="500"/>
+    
+    <com.capricorn.RayMenu
+            android:id="@+id/ray_menu"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"/>
 </RelativeLayout>

@@ -1,5 +1,6 @@
 package idv.funnybrain.bike.nyc;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.IntentSender;
 import android.content.res.Configuration;
@@ -16,6 +17,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.capricorn.RayMenu;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -37,6 +39,7 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import idv.funnybrain.bike.nyc.data.DataDownloader;
 import idv.funnybrain.bike.nyc.data.StationBeanList;
+import idv.funnybrain.bike.nyc.databases.DBHelper;
 import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +73,12 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
     private ObjectMapper objectMapper;
     private String lastUpdate;
     private ListFragment listFragment_left;
+    private ListFragment listFragment_favor;
     private String preSelectedMarker = "";
+    private String nowSelectedMarker = "";
+
+    RayMenu rayMenu;
+    private DBHelper dbHelper;
     // ---- private variable END ----
 
 
@@ -82,9 +90,12 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         setBehindContentView(R.layout.menu_frame);
 
         SlidingMenu sm = getSlidingMenu();
+        sm.setMode(SlidingMenu.LEFT_RIGHT);
+        sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
         sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
         sm.setFadeDegree(0.35f);
-        sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+        sm.setSecondaryMenu(R.layout.list_stations);
+
         setSlidingActionBarEnabled(false);
 
         mLocationClient = new LocationClient(this, this, this);
@@ -104,6 +115,28 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
             listFragment_left = (ListFragment) this.getSupportFragmentManager().findFragmentById(R.id.menu_frame);
         }
         getData();
+
+        dbHelper = new DBHelper(this);
+
+        rayMenu = (RayMenu) findViewById(R.id.ray_menu);
+        rayMenu.setVisibility(View.GONE);
+
+        ImageView iv_favor = new ImageView(this);
+        iv_favor.setImageResource(R.drawable.ic_launcher);
+        rayMenu.addItem(iv_favor, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContentValues values = new ContentValues();
+                values.put(DBHelper.DB_COL_STATION_ID, stations_marker_list.get(nowSelectedMarker).getTitle());
+                if(D) { Log.d(TAG, "addFavor click: " + stations_list.get(nowSelectedMarker).getStationName() + "," +
+                                                         stations_list.get(nowSelectedMarker).getId()); }
+                long result = dbHelper.insertFavor(values);
+                if(result > 0) {
+                    System.out.println("insert favor OK!");
+                    selectMarker(nowSelectedMarker);
+                }
+            }
+        });
 
 
         if(D) { Log.d(TAG, "----> onCreate"); }
@@ -146,6 +179,9 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
     protected void onDestroy() {
         if(D) { Log.d(TAG, "----> onDestroy"); }
         super.onDestroy();
+        if(dbHelper != null) {
+            dbHelper.close();
+        }
     }
 
     @Override
@@ -201,8 +237,8 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
             @Override
             public boolean onMarkerClick(Marker marker) {
                 LatLng position = marker.getPosition();
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
                 FunnyActivity.this.selectMarker(marker.getTitle());
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
                 return true; // if return true, it wont show marker info window.
             }
         };
@@ -333,7 +369,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                                     .snippet(tmpStation.getStationName())
                                             //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
                                             //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_empty))
-                                    .icon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()))
+                                    .icon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(idx, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()))
                                     .draggable(false)
                     )
             );
@@ -354,17 +390,24 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
     }
 
     protected void selectMarker(String idx) {
+        if(D) { Log.d(TAG, "selectMarker, preSelectedMarker: " + preSelectedMarker); }
+        nowSelectedMarker = idx;
         if(!preSelectedMarker.equals("")) { // reset previous selected Marker
             StationBeanList tmpStation = stations_list.get(preSelectedMarker);
-            stations_marker_list.get(preSelectedMarker).setIcon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()));
+            stations_marker_list.get(preSelectedMarker).setIcon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(preSelectedMarker, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()));
         }
-        if(!idx.equals("")) {
-            stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_bike_selected));
+        if(!idx.equals("")) { // click on another Marker
+            if(dbHelper.queryIsFavor(idx)) {
+                stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_bike_selected_favor));
+            } else {
+                stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_bike_selected));
+            }
             updateExtraInfo(true, idx);
         } else { // click on nothing
             updateExtraInfo(false, idx);
         }
         preSelectedMarker = idx;
+
     }
 
     protected void updateExtraInfo(boolean toShow, String idx) {
@@ -376,17 +419,30 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
             ((TextView) findViewById(R.id.info_bike)).setText(String.valueOf(tmpStation.getAvailableBikes()));
             ((TextView) findViewById(R.id.info_dock)).setText(String.valueOf(tmpStation.getAvailableDocks()));
             infoLayout.setVisibility(View.VISIBLE);
+            rayMenu.setVisibility(View.VISIBLE);
         } else {
             infoLayout.setVisibility(View.GONE);
+            rayMenu.setVisibility(View.GONE);
         }
     }
 
-    private BitmapDrawable writeOnDrawable(int bikeCount, int dockCount) {
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker_empty).copy(Bitmap.Config.ARGB_8888, true);
+    private void updateFavorMarker(String idx) {
 
+    }
+
+    private BitmapDrawable writeOnDrawable(String idx, int bikeCount, int dockCount) {
         Paint paint = new Paint();
+
+        Bitmap bitmap;
+        if(dbHelper.queryIsFavor(idx)) {
+            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker_empty_favor).copy(Bitmap.Config.ARGB_8888, true);
+            paint.setColor(Color.RED);
+        } else {
+            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker_empty).copy(Bitmap.Config.ARGB_8888, true);
+            paint.setColor(Color.BLUE);
+        }
+
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.BLUE);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(23);
         paint.setTypeface(Typeface.DEFAULT_BOLD);
