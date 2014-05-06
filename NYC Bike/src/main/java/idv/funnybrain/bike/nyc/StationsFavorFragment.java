@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 /**
  * Created by KuoPiHua on 2014/5/4.
@@ -37,5 +38,16 @@ public class StationsFavorFragment extends ListFragment {
         return inflater.inflate(R.layout.list_stations, null);
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        StationsFavorAdapter adapter = new StationsFavorAdapter(getActivity().getLayoutInflater());
+        setListAdapter(adapter);
+    }
 
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        ((FunnyActivity) getActivity()).updateMap(String.valueOf(id));
+    }
 }
