@@ -15,6 +15,7 @@ public class StationsFavorAdapter extends BaseAdapter {
 
     public StationsFavorAdapter(LayoutInflater layoutInflater) {
         this.layoutInflater = layoutInflater;
+
         mContext = layoutInflater.getContext();
     }
 
