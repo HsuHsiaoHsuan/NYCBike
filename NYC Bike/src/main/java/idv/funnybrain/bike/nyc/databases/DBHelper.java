@@ -65,7 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Cursor queryAll() {
         db = getReadableDatabase();
-        Cursor cursor = db.query(DB_TABLE, new String[] {DB_COL_STATION_ID}, null, null, null, null, null);
+        Cursor cursor = db.query(DB_TABLE, new String[] {DB_COL_ID, DB_COL_STATION_ID}, null, null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
             return cursor;

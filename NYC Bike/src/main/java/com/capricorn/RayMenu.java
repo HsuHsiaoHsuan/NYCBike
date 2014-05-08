@@ -64,6 +64,14 @@ public class RayMenu extends RelativeLayout {
 		item.setOnClickListener(getItemClickListener(listener));
 	}
 
+    public View getItem(int position) {
+        return mRayLayout.getChildAt(position);
+    }
+
+    public void removeAllChild() {
+        mRayLayout.removeAllViews();
+    }
+
 	private OnClickListener getItemClickListener(final OnClickListener listener) {
 		return new OnClickListener() {
 

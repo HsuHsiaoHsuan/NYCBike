@@ -30,10 +30,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.*;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -114,29 +111,12 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         if(savedInstanceState != null && stations_list.size() > 0) {
             listFragment_left = (ListFragment) this.getSupportFragmentManager().findFragmentById(R.id.menu_frame);
         }
-        getData();
+        //getData();
 
         dbHelper = new DBHelper(this);
 
         rayMenu = (RayMenu) findViewById(R.id.ray_menu);
         rayMenu.setVisibility(View.GONE);
-
-        ImageView iv_favor = new ImageView(this);
-        iv_favor.setImageResource(R.drawable.ic_launcher);
-        rayMenu.addItem(iv_favor, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ContentValues values = new ContentValues();
-                values.put(DBHelper.DB_COL_STATION_ID, stations_marker_list.get(nowSelectedMarker).getTitle());
-                if(D) { Log.d(TAG, "addFavor click: " + stations_list.get(nowSelectedMarker).getStationName() + "," +
-                                                         stations_list.get(nowSelectedMarker).getId()); }
-                long result = dbHelper.insertFavor(values);
-                if(result > 0) {
-                    System.out.println("insert favor OK!");
-                    selectMarker(nowSelectedMarker);
-                }
-            }
-        });
 
 
         if(D) { Log.d(TAG, "----> onCreate"); }
@@ -250,6 +230,15 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                 FunnyActivity.this.selectMarker(""); // when user click empty space on Map, it means click nothing -> ""
             }
         });
+
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                if(D) { Log.d(TAG, "----> map onCameraChangeListener, Zoom: " + cameraPosition.zoom); }
+            }
+        });
+
+        getData();
     }
 
     private void getData() {
@@ -420,7 +409,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
 
     }
 
-    protected void updateExtraInfo(boolean toShow, String idx) {
+    protected void updateExtraInfo(boolean toShow, final String idx) {
         RelativeLayout infoLayout = (RelativeLayout) findViewById(R.id.info);
         if(toShow) {
             StationBeanList tmpStation = stations_list.get(idx);
@@ -430,14 +419,49 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
             ((TextView) findViewById(R.id.info_dock)).setText(String.valueOf(tmpStation.getAvailableDocks()));
             infoLayout.setVisibility(View.VISIBLE);
             rayMenu.setVisibility(View.VISIBLE);
+            rayMenu.removeAllChild();
+
+            if(dbHelper.queryIsFavor(idx)) { // it's favor one, so we should show un-favor icon
+                ImageView iv_favor_not = new ImageView(this);
+                iv_favor_not.setImageResource(R.drawable.flaticon_30812);
+                rayMenu.addItem(iv_favor_not, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int result = dbHelper.removeFavor(idx);
+                        if(result >= 0) {
+                            selectMarker(idx);
+                            ((StationsFavorFragment)listFragment_favor).dataChanged();
+                        }
+                    }
+                });
+
+            } else {
+                ImageView iv_favor = new ImageView(this);
+                iv_favor.setImageResource(R.drawable.flaticon_30495);
+                rayMenu.addItem(iv_favor, new View.OnClickListener() { // item position is 0
+                    @Override
+                    public void onClick(View v) {
+                        ContentValues values = new ContentValues();
+                        values.put(DBHelper.DB_COL_STATION_ID, stations_marker_list.get(idx).getTitle());
+                        if(D) { Log.d(TAG, "addFavor click: " + stations_list.get(idx).getStationName() + "," +
+                                stations_list.get(idx).getId()); }
+                        long result = dbHelper.insertFavor(values);
+                        if(result > 0) {
+                            selectMarker(idx);
+                            ((StationsFavorFragment)listFragment_favor).dataChanged();
+                        }
+                    }
+                });
+            }
         } else {
             infoLayout.setVisibility(View.GONE);
             rayMenu.setVisibility(View.GONE);
         }
     }
 
-    private void updateFavorMarker(String idx) {
-
+    private void updateFavorMarker(String idx, boolean isFavor) {
+        StationBeanList tmpStation = stations_list.get(idx);
+        stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(idx, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()));
     }
 
     private BitmapDrawable writeOnDrawable(String idx, int bikeCount, int dockCount) {
