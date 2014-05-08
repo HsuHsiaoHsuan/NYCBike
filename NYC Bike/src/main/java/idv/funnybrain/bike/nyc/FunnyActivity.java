@@ -94,7 +94,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
         sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
         sm.setFadeDegree(0.35f);
-        sm.setSecondaryMenu(R.layout.menu_frame);
+        sm.setSecondaryMenu(R.layout.menu_frame_favor);
 
         setSlidingActionBarEnabled(false);
 
@@ -389,7 +389,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
     private void setupRightSlidingMenu() { // setup favor list
         FragmentTransaction t = this.getSupportFragmentManager().beginTransaction();
         listFragment_favor = StationsFavorFragment.newInstance();
-        t.replace(R.id.menu_frame, listFragment_favor);
+        t.replace(R.id.menu_frame_favor, listFragment_favor);
         t.commit();
     }
 
