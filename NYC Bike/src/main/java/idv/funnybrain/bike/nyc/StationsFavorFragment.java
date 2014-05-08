@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 import idv.funnybrain.bike.nyc.databases.DBHelper;
 
@@ -53,11 +52,6 @@ public class StationsFavorFragment extends ListFragment {
         Cursor cursor = dbHelper.queryAll();
         int idx = cursor.getColumnIndexOrThrow("station_id");
         cursor.moveToFirst();
-        if(D) {
-            do {
-                System.out.println("~~~>" + cursor.getString(idx));
-            } while (cursor.moveToNext());
-        }
 
         adapter = new StationsFavorAdapter(getActivity(), dbHelper.queryAll(), true);
         setListAdapter(adapter);
@@ -65,8 +59,8 @@ public class StationsFavorFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-//        super.onListItemClick(l, v, position, id);
-//        ((FunnyActivity) getActivity()).updateMap(String.valueOf(id));
+        super.onListItemClick(l, v, position, id);
+        ((FunnyActivity) getActivity()).updateMap(String.valueOf(id));
     }
 
     public void dataChanged() {

@@ -2,13 +2,12 @@ package idv.funnybrain.bike.nyc;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
+import idv.funnybrain.bike.nyc.data.StationBeanList;
 import idv.funnybrain.bike.nyc.databases.DBHelper;
 
 /**
@@ -20,15 +19,15 @@ public class StationsFavorAdapter extends CursorAdapter {
 
     // ---- local variable START ----
     private LayoutInflater layoutInflater;
-    private Context mContext;
-    private Cursor mCursor;
+    //private Context mContext;
+    //private Cursor mCursor;
     // ---- local variable END ----
 
     public StationsFavorAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
         this.layoutInflater = LayoutInflater.from(context);
-        this.mContext = context;
-        this.mCursor = c;
+        //this.mContext = context;
+        //this.mCursor = c;
     }
 
     @Override
@@ -38,19 +37,31 @@ public class StationsFavorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+        String idx = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.DB_COL_STATION_ID));
+        StationBeanList tmpStation = FunnyActivity.stations_list.get(idx);
+
         TextView id = (TextView) view.findViewById(R.id._id);
-        id.setText("id");
+        id.setText(idx);
 
         TextView name = (TextView) view.findViewById(R.id._name);
-        name.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.DB_COL_STATION_ID)));
+        name.setText(tmpStation.getStationName());
 
         TextView address2 = (TextView) view.findViewById(R.id._address2);
-        address2.setText("address2");
+        address2.setText(tmpStation.getStAddress2());
 
         TextView bike = (TextView) view.findViewById(R.id._bike);
-        bike.setText("bike");
+        bike.setText(String.valueOf(tmpStation.getAvailableBikes()));
 
         TextView dock = (TextView) view.findViewById(R.id._dock);
-        dock.setText("dock");
+        dock.setText(String.valueOf(tmpStation.getAvailableDocks()));
+    }
+
+    @Override
+    public long getItemId(int position) {
+        Cursor cursor = getCursor();
+        cursor.moveToPosition(position);
+        String idx = cursor.getString(mCursor.getColumnIndexOrThrow(DBHelper.DB_COL_STATION_ID));
+//        return super.getItemId(position);
+        return Long.valueOf(idx);
     }
 }

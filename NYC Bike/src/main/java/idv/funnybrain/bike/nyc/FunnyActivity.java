@@ -358,7 +358,10 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                                     .snippet(tmpStation.getStationName())
                                             //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
                                             //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_empty))
-                                    .icon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(idx, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()))
+                                    .icon(
+                                        BitmapDescriptorFactory.fromBitmap(
+                                            writeOnDrawable(idx, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap())
+                                    )
                                     .draggable(false)
                     )
             );
@@ -393,7 +396,8 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         nowSelectedMarker = idx;
         if(!preSelectedMarker.equals("")) { // reset previous selected Marker
             StationBeanList tmpStation = stations_list.get(preSelectedMarker);
-            stations_marker_list.get(preSelectedMarker).setIcon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(preSelectedMarker, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()));
+            stations_marker_list.get(preSelectedMarker).setIcon(
+                    BitmapDescriptorFactory.fromBitmap(writeOnDrawable(preSelectedMarker, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()));
         }
         if(!idx.equals("")) { // click on another Marker
             if(dbHelper.queryIsFavor(idx)) {
@@ -459,10 +463,10 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         }
     }
 
-    private void updateFavorMarker(String idx, boolean isFavor) {
-        StationBeanList tmpStation = stations_list.get(idx);
-        stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(idx, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()));
-    }
+//    private void updateFavorMarker(String idx, boolean isFavor) {
+//        StationBeanList tmpStation = stations_list.get(idx);
+//        stations_marker_list.get(idx).setIcon(BitmapDescriptorFactory.fromBitmap(writeOnDrawable(idx, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()));
+//    }
 
     private BitmapDrawable writeOnDrawable(String idx, int bikeCount, int dockCount) {
         Paint paint = new Paint();
@@ -486,6 +490,14 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         canvas.drawText(show, bitmap.getWidth()/2, bitmap.getHeight()/2, paint);
 
         return new BitmapDrawable(getResources(), bitmap);
+    }
+
+    private int getSmallIcon(String idx) {
+        if(dbHelper.queryIsFavor(idx)) {
+            return R.drawable.marker_empty_favor_small;
+        } else {
+            return R.drawable.marker_empty_small;
+        }
     }
     // ---- local method END ----
 
