@@ -427,7 +427,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
 
             if(dbHelper.queryIsFavor(idx)) { // it's favor one, so we should show un-favor icon
                 ImageView iv_favor_not = new ImageView(this);
-                iv_favor_not.setImageResource(R.drawable.flaticon_30812);
+                iv_favor_not.setImageResource(R.drawable.bt_nofavor);
                 rayMenu.addItem(iv_favor_not, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -441,7 +441,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
 
             } else {
                 ImageView iv_favor = new ImageView(this);
-                iv_favor.setImageResource(R.drawable.flaticon_30495);
+                iv_favor.setImageResource(R.drawable.bt_favor);
                 rayMenu.addItem(iv_favor, new View.OnClickListener() { // item position is 0
                     @Override
                     public void onClick(View v) {
