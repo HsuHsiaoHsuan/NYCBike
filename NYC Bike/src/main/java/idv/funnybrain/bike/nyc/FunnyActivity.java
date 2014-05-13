@@ -12,11 +12,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.capricorn.RayMenu;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -76,6 +79,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
 
     RayMenu rayMenu;
     private DBHelper dbHelper;
+    private Menu mMenu;
     // ---- private variable END ----
 
 
@@ -126,6 +130,24 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
     public View onCreateView(String name, Context context, AttributeSet attrs) {
         if(D) { Log.d(TAG, "----> onCreateView"); }
         return super.onCreateView(name, context, attrs);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        mMenu = menu;
+
+        MenuItem mItem_refresh = menu.add(0, 0, Menu.FIRST, R.string.refresh);
+        mItem_refresh.setIcon(R.drawable.ic_action_refresh);
+        mItem_refresh.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        mItem_refresh.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                getData();
+                return true;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -279,11 +301,13 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                 }
             }
 
-            // no Connection!  or 500
+            // no Connection!  or 0, 500, 503
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 super.onFailure(statusCode, headers, responseBody, error);
                 if(D) { Log.e(TAG, "----> getData fail: " + statusCode); }
+                Toast.makeText(FunnyActivity.this, R.string.conn_fail, Toast.LENGTH_SHORT).show();
+                setProgressBarIndeterminateVisibility(false);
             }
 
             @Override
