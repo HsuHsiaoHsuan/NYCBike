@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">NYC Bike</string>
+    <string name="loading">Loading...</string>
+    <string name="lastUpdate">Last update time:&#160;&#160;</string>
+    <string name="refresh">Refresh</string>
+    <string name="conn_fail">Connection Failure, plz try again</string>
 </resources>
