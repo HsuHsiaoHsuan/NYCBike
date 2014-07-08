@@ -15,7 +15,7 @@ import idv.funnybrain.bike.nyc.databases.DBHelper;
  */
 public class StationsFavorFragment extends ListFragment {
     // ---- constant variable START ----
-    private static final boolean D = true;
+    private static final boolean D = false;
     private static final String TAG = "StationsFavorFragment";
     // ---- constant variable END ----
 

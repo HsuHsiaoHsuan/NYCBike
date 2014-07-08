@@ -54,7 +54,7 @@ import java.util.Iterator;
 public class FunnyActivity extends SlidingFragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
     // ---- constatt variable START ----
-    private static final boolean D = true;
+    private static final boolean D = false;
     private static final String TAG = "FunnyActivity";
     private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 0;
     private static final String CACHE_FILE = "data";
@@ -239,7 +239,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
             @Override
             public boolean onMarkerClick(Marker marker) {
                 LatLng position = marker.getPosition();
-                FunnyActivity.this.selectMarker(marker.getTitle());
+                selectMarker(marker.getTitle());
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(position));
                 return true; // if return true, it wont show marker info window.
             }
@@ -249,7 +249,7 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                FunnyActivity.this.selectMarker(""); // when user click empty space on Map, it means click nothing -> ""
+                selectMarker(""); // when user click empty space on Map, it means click nothing -> ""
             }
         });
 
@@ -267,7 +267,8 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         setProgressBarIndeterminateVisibility(true);
         DataDownloader.post("", null, new JsonHttpResponseHandler(){
             @Override
-            public void onSuccess(JSONObject response) {
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
                 try {
                     lastUpdate = response.getString("executionTime");
 
@@ -303,8 +304,8 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
 
             // no Connection!  or 0, 500, 503
             @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                super.onFailure(statusCode, headers, responseBody, error);
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
                 if(D) { Log.e(TAG, "----> getData fail: " + statusCode); }
                 Toast.makeText(FunnyActivity.this, R.string.conn_fail, Toast.LENGTH_SHORT).show();
                 setProgressBarIndeterminateVisibility(false);
@@ -316,16 +317,18 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                 if(D) { Log.e(TAG, "----> getData progress, bytesWritten: " + bytesWritten + ", totalSize: " + totalSize); }
             }
 
-            @Override
-            public void onRetry() {
-                super.onRetry();
-                if(D) { Log.e(TAG, "----> getData retry"); }
-            }
+
+//            @Override
+//            public void onRetry() {
+//                super.onRetry();
+//                if(D) { Log.e(TAG, "----> getData retry"); }
+//            }
 
             @Override
             public void onFinish() {
                 super.onFinish();
                 if(D) { Log.e(TAG, "----> onFinish"); }
+                setProgressBarIndeterminateVisibility(false);
             }
         });
     }
@@ -380,12 +383,12 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
                             new MarkerOptions().position(tmpStation.getLatLng())
                                     .title(tmpStation.getId())
                                     .snippet(tmpStation.getStationName())
-                                            //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                                    .icon(BitmapDescriptorFactory.defaultMarker(dbHelper.queryIsFavor(idx) ? BitmapDescriptorFactory.HUE_ROSE : BitmapDescriptorFactory.HUE_CYAN))
                                             //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_empty))
-                                    .icon(
-                                        BitmapDescriptorFactory.fromBitmap(
-                                            writeOnDrawable(idx, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap())
-                                    )
+//                                    .icon(
+//                                        BitmapDescriptorFactory.fromBitmap(
+//                                            writeOnDrawable(idx, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap())
+//                                    )
                                     .draggable(false)
                     )
             );
@@ -421,7 +424,14 @@ public class FunnyActivity extends SlidingFragmentActivity implements GooglePlay
         if(!preSelectedMarker.equals("")) { // reset previous selected Marker
             StationBeanList tmpStation = stations_list.get(preSelectedMarker);
             stations_marker_list.get(preSelectedMarker).setIcon(
-                    BitmapDescriptorFactory.fromBitmap(writeOnDrawable(preSelectedMarker, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()));
+                    BitmapDescriptorFactory.defaultMarker(
+                            dbHelper.queryIsFavor(preSelectedMarker) ?
+                                    BitmapDescriptorFactory.HUE_ROSE :
+                                    BitmapDescriptorFactory.HUE_CYAN
+                    )
+            );
+                    // BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+//                    BitmapDescriptorFactory.fromBitmap(writeOnDrawable(preSelectedMarker, tmpStation.getAvailableBikes(), tmpStation.getAvailableDocks()).getBitmap()));
         }
         if(!idx.equals("")) { // click on another Marker
             if(dbHelper.queryIsFavor(idx)) {

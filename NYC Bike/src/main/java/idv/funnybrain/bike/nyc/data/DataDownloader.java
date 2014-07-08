@@ -15,12 +15,14 @@ public class DataDownloader {
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.setTimeout(15000);
         client.setMaxRetriesAndTimeout(10, 1300);
+        client.setEnableRedirects(true);
         client.get(getAbsoluteUrl(url), params, responseHandler);
     }
 
     public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.setTimeout(15000);
         client.setMaxRetriesAndTimeout(10, 1300);
+        client.setEnableRedirects(true);
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 

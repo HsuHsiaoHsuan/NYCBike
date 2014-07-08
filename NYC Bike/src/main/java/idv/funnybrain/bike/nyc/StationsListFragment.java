@@ -13,7 +13,7 @@ import android.widget.ListView;
  */
 public class StationsListFragment extends ListFragment {
     // ---- constant variable START ----
-    private static final boolean D = true;
+    private static final boolean D = false;
     private static final String TAG = "StationsListFragment";
     // ---- constant variable END ----
 
